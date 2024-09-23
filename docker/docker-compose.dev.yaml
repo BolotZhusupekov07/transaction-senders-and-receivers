@@ -1,0 +1,80 @@
+version: "3"
+
+networks:
+  app_network:
+
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:13.4
+    restart: unless-stopped
+    ports:
+      - 5432
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+      TZ: 'UTC'
+    networks:
+      app_network: {}
+
+  server:
+    container_name: backend
+    user: root
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    command: /start
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DJANGO_ALLOWED_HOSTS: "*"
+      DEBUG: True
+      SECRET_KEY: 12356
+      DB_PASSWORD: test
+      DB_USER: test
+      DB_NAME: test
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+    volumes:
+      - static-volume:/app/staticfiles/
+      - media-volume:/app/mediafiles/
+    env_file:
+      - ../.env
+    networks:
+      app_network: {}
+
+  redis:
+    container_name: redis
+    image: redis:7.0.5-alpine
+    restart: unless-stopped
+    expose:
+      - 6379
+    networks:
+      app_network: {}
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ../
+      dockerfile: ./docker/local/Dockerfile
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - server
+    volumes:
+      - static-volume:/app/staticfiles/
+      - media-volume:/app/mediafiles/
+    networks:
+      app_network: {}
+
+volumes:
+  static-volume:
+  media-volume:

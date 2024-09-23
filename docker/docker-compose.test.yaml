@@ -1,0 +1,55 @@
+version: "3"
+
+networks:
+  app_network:
+
+
+services:
+  redis:
+    container_name: redis
+    image: redis:7.0.5-alpine
+    restart: unless-stopped
+    expose:
+      - 6379
+    networks:
+      app_network: {}
+
+  postgres:
+    container_name: postgres
+    image: postgres:13.4
+    restart: always
+    ports:
+      - 5432
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+      POSTGRES_DB: test
+      TZ: 'UTC'
+    networks:
+      app_network: {}
+
+  server:
+    container_name: backend
+    user: root
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    command: -c "python manage.py migrate && python manage.py test"
+    ports:
+      - 8000
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.testing
+      DJANGO_ALLOWED_HOSTS: "*"
+      DEBUG: "true"
+      SECRET_KEY: 12356
+      DB_PASSWORD: test
+      DB_USER: test
+      DB_NAME: test
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+    networks:
+      app_network: {}

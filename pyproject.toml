@@ -1,0 +1,40 @@
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+
+[tool.poetry]
+name = "transaction-and-participant"
+version = "0.1.0"
+description = ""
+authors = ["Bolot Zhusupekov <bolot.zhusupekov07@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.1.1"
+djangorestframework = "^3.15.2"
+drf-yasg = "^1.21.7"
+redis = "^5.0.8"
+faker = "^29.0.0"
+django-environ = "^0.11.2"
+django-cors-headers = "^4.4.0"
+django-debug-toolbar = "^4.4.6"
+rest-framework-simplejwt = "^0.0.2"
+djangorestframework-simplejwt = "^5.3.1"
+django-redis = "^5.4.0"
+black = "^24.8.0"
+isort = "^5.13.2"
+pydantic = "^2.9.2"
+mypy = "^1.11.2"
+django-stubs = "^5.0.4"
+djangorestframework-stubs = "^3.15.1"
+coverage = "^7.6.1"
+django-coverage-plugin = "^3.1.0"
+gevent = "^24.2.1"
+gunicorn = "^23.0.0"
+psycopg2-binary = "^2.9.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
